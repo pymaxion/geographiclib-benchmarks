@@ -43,3 +43,6 @@ __pycache__/
 
 # env file
 .env
+
+# Claude
+.claude/
