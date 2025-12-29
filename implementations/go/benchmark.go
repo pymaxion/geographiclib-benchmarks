@@ -92,7 +92,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	const RUNS = 5
+	const RUNS = 50
 	cases, err := loadTestCases(os.Args[1])
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error loading test cases:", err)

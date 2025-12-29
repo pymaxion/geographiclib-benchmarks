@@ -4,6 +4,8 @@ go 1.21
 
 require github.com/pymaxion/geographiclib-go/v2 v2.1.1
 
+replace github.com/pymaxion/geographiclib-go/v2 => /Users/patrick/Documents/random/geographiclib-go
+
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

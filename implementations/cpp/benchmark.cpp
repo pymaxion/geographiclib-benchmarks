@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    const int RUNS = 5;
+    const int RUNS = 50;
     auto cases = loadTestCases(argv[1]);
     const Geodesic& geod = Geodesic::WGS84();
 
