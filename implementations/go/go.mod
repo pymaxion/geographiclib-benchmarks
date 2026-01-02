@@ -1,10 +1,11 @@
 module geographiclib-benchmark
 
-go 1.21
+go 1.23.0
 
-require github.com/pymaxion/geographiclib-go/v2 v2.1.1
-
-replace github.com/pymaxion/geographiclib-go/v2 => /Users/patrick/Documents/random/geographiclib-go
+require (
+	github.com/pymaxion/geographiclib-go/v2 v2.1.1
+	gonum.org/v1/gonum v0.16.0
+)
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

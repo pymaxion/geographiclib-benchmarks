@@ -1,5 +1,6 @@
 import net.sf.geographiclib.Geodesic;
 import net.sf.geographiclib.GeodesicData;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -27,12 +28,12 @@ public class Benchmark {
         benchmarkDirect(geod, cases);
         benchmarkInverse(geod, cases);
 
-        double[] directTimes = new double[RUNS];
-        double[] inverseTimes = new double[RUNS];
+        DescriptiveStatistics directStats = new DescriptiveStatistics();
+        DescriptiveStatistics inverseStats = new DescriptiveStatistics();
 
         for (int i = 0; i < RUNS; i++) {
-            directTimes[i] = benchmarkDirect(geod, cases);
-            inverseTimes[i] = benchmarkInverse(geod, cases);
+            directStats.addValue(benchmarkDirect(geod, cases));
+            inverseStats.addValue(benchmarkInverse(geod, cases));
         }
 
         // Output JSON
@@ -43,16 +44,10 @@ public class Benchmark {
         System.out.println("  \"library_version\": \"2.1\",");
         System.out.println("  \"test_cases\": " + cases.size() + ",");
         System.out.println("  \"runs\": " + RUNS + ",");
-        System.out.print("  \"direct_ms\": [");
-        for (int i = 0; i < directTimes.length; i++) {
-            System.out.printf("%.1f%s", directTimes[i], i < directTimes.length - 1 ? ", " : "");
-        }
-        System.out.println("],");
-        System.out.print("  \"inverse_ms\": [");
-        for (int i = 0; i < inverseTimes.length; i++) {
-            System.out.printf("%.1f%s", inverseTimes[i], i < inverseTimes.length - 1 ? ", " : "");
-        }
-        System.out.println("]");
+        System.out.printf("  \"direct_us\": %.3f,%n", directStats.getPercentile(50));
+        System.out.printf("  \"direct_stddev_us\": %.3f,%n", directStats.getStandardDeviation());
+        System.out.printf("  \"inverse_us\": %.3f,%n", inverseStats.getPercentile(50));
+        System.out.printf("  \"inverse_stddev_us\": %.3f%n", inverseStats.getStandardDeviation());
         System.out.println("}");
     }
 
@@ -80,6 +75,7 @@ public class Benchmark {
         return cases;
     }
 
+    // Returns time per function call in microseconds
     static double benchmarkDirect(Geodesic geod, List<TestCase> cases) {
         long start = System.nanoTime();
         double checksum = 0;
@@ -90,9 +86,10 @@ public class Benchmark {
         }
         long end = System.nanoTime();
         if (checksum == Double.NaN) System.err.print(""); // Prevent optimization
-        return (end - start) / 1_000_000.0;
+        return (end - start) / 1000.0 / cases.size(); // microseconds per call
     }
 
+    // Returns time per function call in microseconds
     static double benchmarkInverse(Geodesic geod, List<TestCase> cases) {
         long start = System.nanoTime();
         double checksum = 0;
@@ -103,6 +100,6 @@ public class Benchmark {
         }
         long end = System.nanoTime();
         if (checksum == Double.NaN) System.err.print("");
-        return (end - start) / 1_000_000.0;
+        return (end - start) / 1000.0 / cases.size(); // microseconds per call
     }
 }

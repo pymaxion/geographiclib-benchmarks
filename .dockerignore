@@ -1,0 +1,17 @@
+# Build artifacts
+implementations/cpp/build/
+implementations/go/benchmark
+implementations/rust/target/
+implementations/java/target/
+results/
+
+# Git and IDE
+.git/
+.idea/
+.claude/
+
+# Data (will be downloaded fresh)
+data/GeodTest.dat
+
+# Misc
+*.jfr

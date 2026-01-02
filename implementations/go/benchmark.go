@@ -7,11 +7,13 @@ import (
 	"math"
 	"os"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/pymaxion/geographiclib-go/v2/geodesic"
+	"gonum.org/v1/gonum/stat"
 )
 
 type TestCase struct {
@@ -22,14 +24,16 @@ type TestCase struct {
 }
 
 type Result struct {
-	Language       string    `json:"language"`
-	Version        string    `json:"version"`
-	Library        string    `json:"library"`
-	LibraryVersion string    `json:"library_version"`
-	TestCases      int       `json:"test_cases"`
-	Runs           int       `json:"runs"`
-	DirectMs       []float64 `json:"direct_ms"`
-	InverseMs      []float64 `json:"inverse_ms"`
+	Language       string  `json:"language"`
+	Version        string  `json:"version"`
+	Library        string  `json:"library"`
+	LibraryVersion string  `json:"library_version"`
+	TestCases      int     `json:"test_cases"`
+	Runs           int     `json:"runs"`
+	DirectMedian   float64 `json:"direct_us"`
+	DirectStdDev   float64 `json:"direct_stddev_us"`
+	InverseMedian  float64 `json:"inverse_us"`
+	InverseStdDev  float64 `json:"inverse_stddev_us"`
 }
 
 func loadTestCases(filepath string) ([]TestCase, error) {
@@ -62,6 +66,7 @@ func loadTestCases(filepath string) ([]TestCase, error) {
 	return cases, scanner.Err()
 }
 
+// Returns time per function call in microseconds
 func benchmarkDirect(cases []TestCase) float64 {
 	start := time.Now()
 	var checksum float64
@@ -71,9 +76,10 @@ func benchmarkDirect(cases []TestCase) float64 {
 	}
 	elapsed := time.Since(start)
 	_ = checksum // Prevent optimization
-	return float64(elapsed.Nanoseconds()) / 1e6
+	return float64(elapsed.Nanoseconds()) / float64(len(cases)) / 1000.0 // microseconds per call
 }
 
+// Returns time per function call in microseconds
 func benchmarkInverse(cases []TestCase) float64 {
 	start := time.Now()
 	var checksum float64
@@ -83,7 +89,18 @@ func benchmarkInverse(cases []TestCase) float64 {
 	}
 	elapsed := time.Since(start)
 	_ = checksum
-	return float64(elapsed.Nanoseconds()) / 1e6
+	return float64(elapsed.Nanoseconds()) / float64(len(cases)) / 1000.0 // microseconds per call
+}
+
+func median(data []float64) float64 {
+	sorted := make([]float64, len(data))
+	copy(sorted, data)
+	sort.Float64s(sorted)
+	return stat.Quantile(0.5, stat.Empirical, sorted, nil)
+}
+
+func stddev(data []float64) float64 {
+	return stat.StdDev(data, nil)
 }
 
 func main() {
@@ -111,12 +128,6 @@ func main() {
 		inverseTimes[i] = benchmarkInverse(cases)
 	}
 
-	// Round to 1 decimal place
-	for i := range directTimes {
-		directTimes[i] = math.Round(directTimes[i]*10) / 10
-		inverseTimes[i] = math.Round(inverseTimes[i]*10) / 10
-	}
-
 	result := Result{
 		Language:       "go",
 		Version:        runtime.Version(),
@@ -124,8 +135,10 @@ func main() {
 		LibraryVersion: "2.1.1",
 		TestCases:      len(cases),
 		Runs:           RUNS,
-		DirectMs:       directTimes,
-		InverseMs:      inverseTimes,
+		DirectMedian:   math.Round(median(directTimes)*1000) / 1000,
+		DirectStdDev:   math.Round(stddev(directTimes)*1000) / 1000,
+		InverseMedian:  math.Round(median(inverseTimes)*1000) / 1000,
+		InverseStdDev:  math.Round(stddev(inverseTimes)*1000) / 1000,
 	}
 
 	enc := json.NewEncoder(os.Stdout)

@@ -3,7 +3,6 @@
 
 import json
 import os
-import statistics
 import sys
 from pathlib import Path
 
@@ -28,11 +27,9 @@ def analyze(results: dict) -> None:
         print("No results found!")
         return
 
-    # Calculate medians for each language
+    # Build summaries
     summaries = []
     for lang, data in results.items():
-        direct_median = statistics.median(data["direct_ms"])
-        inverse_median = statistics.median(data["inverse_ms"])
         summaries.append({
             "language": lang,
             "version": data["version"],
@@ -40,12 +37,11 @@ def analyze(results: dict) -> None:
             "library_version": data["library_version"],
             "test_cases": data["test_cases"],
             "runs": data["runs"],
-            "direct_median": direct_median,
-            "inverse_median": inverse_median,
+            "direct_us": data["direct_us"],
+            "direct_stddev_us": data["direct_stddev_us"],
+            "inverse_us": data["inverse_us"],
+            "inverse_stddev_us": data["inverse_stddev_us"],
         })
-
-    # Sort by direct median time
-    summaries.sort(key=lambda x: x["direct_median"])
 
     # Print header
     print("\n" + "=" * 80)
@@ -55,29 +51,30 @@ def analyze(results: dict) -> None:
     print(f"Runs per benchmark: {summaries[0]['runs']}")
 
     # Print Direct results
+    summaries.sort(key=lambda x: x["direct_us"])
     print("\n" + "-" * 40)
     print("Direct (geodesic forward problem)")
     print("-" * 40)
-    print(f"{'Language':<10} {'Median (ms)':<12} {'Relative':<10} {'Library'}")
-    print("-" * 60)
+    print(f"{'Language':<10} {'Median (µs)':<14} {'StdDev':<10} {'Relative':<10} {'Library'}")
+    print("-" * 80)
 
-    baseline = summaries[0]["direct_median"]
+    baseline = summaries[0]["direct_us"]
     for s in summaries:
-        relative = s["direct_median"] / baseline
-        print(f"{s['language']:<10} {s['direct_median']:<12.1f} {relative:<10.2f}x {s['library']} {s['library_version']}")
+        relative = s["direct_us"] / baseline
+        print(f"{s['language']:<10} {s['direct_us']:<14.3f} ±{s['direct_stddev_us']:<8.3f} {relative:<10.2f}x {s['library']} {s['library_version']}")
 
     # Print Inverse results
-    summaries.sort(key=lambda x: x["inverse_median"])
+    summaries.sort(key=lambda x: x["inverse_us"])
     print("\n" + "-" * 40)
     print("Inverse (geodesic inverse problem)")
     print("-" * 40)
-    print(f"{'Language':<10} {'Median (ms)':<12} {'Relative':<10} {'Library'}")
-    print("-" * 60)
+    print(f"{'Language':<10} {'Median (µs)':<14} {'StdDev':<10} {'Relative':<10} {'Library'}")
+    print("-" * 80)
 
-    baseline = summaries[0]["inverse_median"]
+    baseline = summaries[0]["inverse_us"]
     for s in summaries:
-        relative = s["inverse_median"] / baseline
-        print(f"{s['language']:<10} {s['inverse_median']:<12.1f} {relative:<10.2f}x {s['library']} {s['library_version']}")
+        relative = s["inverse_us"] / baseline
+        print(f"{s['language']:<10} {s['inverse_us']:<14.3f} ±{s['inverse_stddev_us']:<8.3f} {relative:<10.2f}x {s['library']} {s['library_version']}")
 
     # Print version info
     print("\n" + "-" * 40)

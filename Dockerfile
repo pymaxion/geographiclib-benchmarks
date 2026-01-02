@@ -1,34 +1,35 @@
-# Multi-stage build for GeographicLib benchmarks
-FROM ubuntu:24.04 AS base
+# GeographicLib benchmarks
+FROM debian:bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install common dependencies
-RUN apt-get update && apt-get install -y \
+# Install all dependencies (apt-get update is required once to populate package lists)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
+    pkg-config \
     curl \
-    git \
+    ca-certificates \
     wget \
     python3 \
+    libgeographiclib-dev \
+    libboost-dev \
+    openjdk-17-jdk-headless \
+    maven \
     && rm -rf /var/lib/apt/lists/*
 
-# Install GeographicLib (C++)
-RUN apt-get update && apt-get install -y libgeographic-dev && rm -rf /var/lib/apt/lists/*
-
-# Install Java (OpenJDK 21)
-RUN apt-get update && apt-get install -y openjdk-21-jdk maven && rm -rf /var/lib/apt/lists/*
-
-# Install Go
-RUN wget -q https://go.dev/dl/go1.23.4.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz && \
-    rm go1.23.4.linux-amd64.tar.gz
+# Install Go 1.25
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "arm64" ]; then GOARCH="arm64"; else GOARCH="amd64"; fi && \
+    wget -q https://go.dev/dl/go1.25.4.linux-${GOARCH}.tar.gz && \
+    tar -C /usr/local -xzf go1.25.4.linux-${GOARCH}.tar.gz && \
+    rm go1.25.4.linux-${GOARCH}.tar.gz
 ENV PATH="/usr/local/go/bin:${PATH}"
 ENV GOPATH="/go"
 ENV PATH="${GOPATH}/bin:${PATH}"
 
 # Install Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 WORKDIR /benchmark

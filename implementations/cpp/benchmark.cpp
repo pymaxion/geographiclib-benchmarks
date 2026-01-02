@@ -3,14 +3,18 @@
 #include <sstream>
 #include <vector>
 #include <chrono>
-#include <cmath>
 #include <iomanip>
 
 #include <GeographicLib/Geodesic.hpp>
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics/stats.hpp>
+#include <boost/accumulators/statistics/median.hpp>
+#include <boost/accumulators/statistics/variance.hpp>
 
 using namespace std;
 using namespace GeographicLib;
 using namespace std::chrono;
+namespace ba = boost::accumulators;
 
 struct TestCase {
     double lat1, lon1, azi1, lat2, lon2, azi2, s12, a12, m12, S12;
@@ -30,6 +34,7 @@ vector<TestCase> loadTestCases(const string& filepath) {
     return cases;
 }
 
+// Returns time per function call in microseconds
 double benchmarkDirect(const Geodesic& geod, const vector<TestCase>& cases) {
     auto start = high_resolution_clock::now();
     double checksum = 0;
@@ -41,9 +46,10 @@ double benchmarkDirect(const Geodesic& geod, const vector<TestCase>& cases) {
     auto end = high_resolution_clock::now();
     volatile double v = checksum;
     (void)v;
-    return duration<double, milli>(end - start).count();
+    return duration<double, micro>(end - start).count() / cases.size();
 }
 
+// Returns time per function call in microseconds
 double benchmarkInverse(const Geodesic& geod, const vector<TestCase>& cases) {
     auto start = high_resolution_clock::now();
     double checksum = 0;
@@ -55,7 +61,7 @@ double benchmarkInverse(const Geodesic& geod, const vector<TestCase>& cases) {
     auto end = high_resolution_clock::now();
     volatile double v = checksum;
     (void)v;
-    return duration<double, milli>(end - start).count();
+    return duration<double, micro>(end - start).count() / cases.size();
 }
 
 int main(int argc, char* argv[]) {
@@ -72,10 +78,12 @@ int main(int argc, char* argv[]) {
     benchmarkDirect(geod, cases);
     benchmarkInverse(geod, cases);
 
-    vector<double> directTimes, inverseTimes;
+    ba::accumulator_set<double, ba::stats<ba::tag::median, ba::tag::variance>> directAcc;
+    ba::accumulator_set<double, ba::stats<ba::tag::median, ba::tag::variance>> inverseAcc;
+
     for (int i = 0; i < RUNS; i++) {
-        directTimes.push_back(benchmarkDirect(geod, cases));
-        inverseTimes.push_back(benchmarkInverse(geod, cases));
+        directAcc(benchmarkDirect(geod, cases));
+        inverseAcc(benchmarkInverse(geod, cases));
     }
 
     // Output JSON
@@ -86,18 +94,11 @@ int main(int argc, char* argv[]) {
     cout << "  \"library_version\": \"" << GEOGRAPHICLIB_VERSION_STRING << "\"," << endl;
     cout << "  \"test_cases\": " << cases.size() << "," << endl;
     cout << "  \"runs\": " << RUNS << "," << endl;
-    cout << "  \"direct_ms\": [";
-    for (size_t i = 0; i < directTimes.size(); i++) {
-        cout << fixed << setprecision(1) << directTimes[i];
-        if (i < directTimes.size() - 1) cout << ", ";
-    }
-    cout << "]," << endl;
-    cout << "  \"inverse_ms\": [";
-    for (size_t i = 0; i < inverseTimes.size(); i++) {
-        cout << fixed << setprecision(1) << inverseTimes[i];
-        if (i < inverseTimes.size() - 1) cout << ", ";
-    }
-    cout << "]" << endl;
+    cout << fixed << setprecision(3);
+    cout << "  \"direct_us\": " << ba::median(directAcc) << "," << endl;
+    cout << "  \"direct_stddev_us\": " << sqrt(ba::variance(directAcc)) << "," << endl;
+    cout << "  \"inverse_us\": " << ba::median(inverseAcc) << "," << endl;
+    cout << "  \"inverse_stddev_us\": " << sqrt(ba::variance(inverseAcc)) << endl;
     cout << "}" << endl;
 
     return 0;

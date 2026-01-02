@@ -1,5 +1,6 @@
 use geographiclib_rs::{DirectGeodesic, Geodesic, InverseGeodesic};
 use serde::Serialize;
+use statrs::statistics::{Data, Distribution, Median};
 use std::env;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -36,8 +37,10 @@ struct Result {
     library_version: String,
     test_cases: usize,
     runs: usize,
-    direct_ms: Vec<f64>,
-    inverse_ms: Vec<f64>,
+    direct_us: f64,
+    direct_stddev_us: f64,
+    inverse_us: f64,
+    inverse_stddev_us: f64,
 }
 
 fn load_test_cases(filepath: &str) -> Vec<TestCase> {
@@ -63,6 +66,7 @@ fn load_test_cases(filepath: &str) -> Vec<TestCase> {
     cases
 }
 
+// Returns time per function call in microseconds
 fn benchmark_direct(geod: &Geodesic, cases: &[TestCase]) -> f64 {
     let start = Instant::now();
     let mut checksum = 0.0_f64;
@@ -72,9 +76,10 @@ fn benchmark_direct(geod: &Geodesic, cases: &[TestCase]) -> f64 {
     }
     let elapsed = start.elapsed();
     let _ = checksum; // Prevent optimization
-    elapsed.as_secs_f64() * 1000.0
+    elapsed.as_secs_f64() * 1_000_000.0 / cases.len() as f64
 }
 
+// Returns time per function call in microseconds
 fn benchmark_inverse(geod: &Geodesic, cases: &[TestCase]) -> f64 {
     let start = Instant::now();
     let mut checksum = 0.0_f64;
@@ -84,7 +89,7 @@ fn benchmark_inverse(geod: &Geodesic, cases: &[TestCase]) -> f64 {
     }
     let elapsed = start.elapsed();
     let _ = checksum;
-    elapsed.as_secs_f64() * 1000.0
+    elapsed.as_secs_f64() * 1_000_000.0 / cases.len() as f64
 }
 
 fn main() {
@@ -109,15 +114,8 @@ fn main() {
         inverse_times.push(benchmark_inverse(&geod, &cases));
     }
 
-    // Round to 1 decimal place
-    direct_times = direct_times
-        .iter()
-        .map(|t| (t * 10.0).round() / 10.0)
-        .collect();
-    inverse_times = inverse_times
-        .iter()
-        .map(|t| (t * 10.0).round() / 10.0)
-        .collect();
+    let direct_data = Data::new(direct_times.clone());
+    let inverse_data = Data::new(inverse_times.clone());
 
     let result = Result {
         language: "rust".to_string(),
@@ -126,8 +124,10 @@ fn main() {
         library_version: "0.2.5".to_string(),
         test_cases: cases.len(),
         runs: RUNS,
-        direct_ms: direct_times,
-        inverse_ms: inverse_times,
+        direct_us: (direct_data.median() * 1000.0).round() / 1000.0,
+        direct_stddev_us: (direct_data.std_dev().unwrap_or(0.0) * 1000.0).round() / 1000.0,
+        inverse_us: (inverse_data.median() * 1000.0).round() / 1000.0,
+        inverse_stddev_us: (inverse_data.std_dev().unwrap_or(0.0) * 1000.0).round() / 1000.0,
     };
 
     println!("{}", serde_json::to_string_pretty(&result).unwrap());

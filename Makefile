@@ -44,7 +44,7 @@ run-cpp: build-cpp
 
 run-java: build-java
 	@mkdir -p $(RESULTS_DIR)
-	java -jar implementations/java/target/geographiclib-benchmark-1.0.jar $(DATA_FILE) > $(RESULTS_DIR)/java.json
+	java -jar implementations/java/target/benchmark-1.0-SNAPSHOT.jar $(DATA_FILE) > $(RESULTS_DIR)/java.json
 	@echo "Java benchmark complete"
 
 run-go: build-go
