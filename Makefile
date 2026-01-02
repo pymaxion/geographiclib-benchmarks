@@ -1,4 +1,4 @@
-.PHONY: all build clean run cpp java go rust data
+.PHONY: all build clean run run-only cpp java go rust data analyze analyze-only
 
 DATA_FILE := data/GeodTest.dat
 RESULTS_DIR := results
@@ -60,3 +60,18 @@ run-rust: build-rust
 # Run analysis script
 analyze: run
 	python3 scripts/analyze.py $(RESULTS_DIR)
+
+analyze-only:
+	python3 scripts/analyze.py $(RESULTS_DIR)
+
+# Run targets without build dependencies (for Docker where build is done separately)
+run-only:
+	@mkdir -p $(RESULTS_DIR)
+	./implementations/cpp/build/benchmark $(DATA_FILE) > $(RESULTS_DIR)/cpp.json
+	@echo "C++ benchmark complete"
+	java -jar implementations/java/target/benchmark-1.0-SNAPSHOT.jar $(DATA_FILE) > $(RESULTS_DIR)/java.json
+	@echo "Java benchmark complete"
+	./implementations/go/benchmark $(DATA_FILE) > $(RESULTS_DIR)/go.json
+	@echo "Go benchmark complete"
+	./implementations/rust/target/release/geographiclib-benchmark $(DATA_FILE) > $(RESULTS_DIR)/rust.json
+	@echo "Rust benchmark complete"

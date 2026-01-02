@@ -34,7 +34,7 @@ vector<TestCase> loadTestCases(const string& filepath) {
     return cases;
 }
 
-// Returns time per function call in microseconds
+// Returns total time for running all test cases in milliseconds
 double benchmarkDirect(const Geodesic& geod, const vector<TestCase>& cases) {
     auto start = high_resolution_clock::now();
     double checksum = 0;
@@ -46,10 +46,10 @@ double benchmarkDirect(const Geodesic& geod, const vector<TestCase>& cases) {
     auto end = high_resolution_clock::now();
     volatile double v = checksum;
     (void)v;
-    return duration<double, micro>(end - start).count() / cases.size();
+    return duration<double, milli>(end - start).count();
 }
 
-// Returns time per function call in microseconds
+// Returns total time for running all test cases in milliseconds
 double benchmarkInverse(const Geodesic& geod, const vector<TestCase>& cases) {
     auto start = high_resolution_clock::now();
     double checksum = 0;
@@ -61,7 +61,7 @@ double benchmarkInverse(const Geodesic& geod, const vector<TestCase>& cases) {
     auto end = high_resolution_clock::now();
     volatile double v = checksum;
     (void)v;
-    return duration<double, micro>(end - start).count() / cases.size();
+    return duration<double, milli>(end - start).count();
 }
 
 int main(int argc, char* argv[]) {
@@ -94,11 +94,11 @@ int main(int argc, char* argv[]) {
     cout << "  \"library_version\": \"" << GEOGRAPHICLIB_VERSION_STRING << "\"," << endl;
     cout << "  \"test_cases\": " << cases.size() << "," << endl;
     cout << "  \"runs\": " << RUNS << "," << endl;
-    cout << fixed << setprecision(3);
-    cout << "  \"direct_us\": " << ba::median(directAcc) << "," << endl;
-    cout << "  \"direct_stddev_us\": " << sqrt(ba::variance(directAcc)) << "," << endl;
-    cout << "  \"inverse_us\": " << ba::median(inverseAcc) << "," << endl;
-    cout << "  \"inverse_stddev_us\": " << sqrt(ba::variance(inverseAcc)) << endl;
+    cout << fixed << setprecision(2);
+    cout << "  \"direct_ms\": " << ba::median(directAcc) << "," << endl;
+    cout << "  \"direct_stddev_ms\": " << sqrt(ba::variance(directAcc)) << "," << endl;
+    cout << "  \"inverse_ms\": " << ba::median(inverseAcc) << "," << endl;
+    cout << "  \"inverse_stddev_ms\": " << sqrt(ba::variance(inverseAcc)) << endl;
     cout << "}" << endl;
 
     return 0;

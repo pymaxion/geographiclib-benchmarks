@@ -1,6 +1,6 @@
 module geographiclib-benchmark
 
-go 1.23.0
+go 1.25
 
 require (
 	github.com/pymaxion/geographiclib-go/v2 v2.1.1

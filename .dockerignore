@@ -1,17 +1,28 @@
 # Build artifacts
 implementations/cpp/build/
 implementations/go/benchmark
+implementations/go/*.test
+implementations/go/*.prof
 implementations/rust/target/
 implementations/java/target/
 results/
 
 # Git and IDE
 .git/
+.github/
 .idea/
+.vscode/
 .claude/
+*.md
+LICENSE
+CLAUDE.md
 
-# Data (will be downloaded fresh)
+# Data (downloaded inside container)
 data/GeodTest.dat
 
 # Misc
 *.jfr
+*.swp
+*.swo
+*~
+.DS_Store

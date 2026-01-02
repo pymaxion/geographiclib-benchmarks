@@ -44,10 +44,10 @@ public class Benchmark {
         System.out.println("  \"library_version\": \"2.1\",");
         System.out.println("  \"test_cases\": " + cases.size() + ",");
         System.out.println("  \"runs\": " + RUNS + ",");
-        System.out.printf("  \"direct_us\": %.3f,%n", directStats.getPercentile(50));
-        System.out.printf("  \"direct_stddev_us\": %.3f,%n", directStats.getStandardDeviation());
-        System.out.printf("  \"inverse_us\": %.3f,%n", inverseStats.getPercentile(50));
-        System.out.printf("  \"inverse_stddev_us\": %.3f%n", inverseStats.getStandardDeviation());
+        System.out.printf("  \"direct_ms\": %.2f,%n", directStats.getPercentile(50));
+        System.out.printf("  \"direct_stddev_ms\": %.2f,%n", directStats.getStandardDeviation());
+        System.out.printf("  \"inverse_ms\": %.2f,%n", inverseStats.getPercentile(50));
+        System.out.printf("  \"inverse_stddev_ms\": %.2f%n", inverseStats.getStandardDeviation());
         System.out.println("}");
     }
 
@@ -75,7 +75,7 @@ public class Benchmark {
         return cases;
     }
 
-    // Returns time per function call in microseconds
+    // Returns total time for running all test cases in milliseconds
     static double benchmarkDirect(Geodesic geod, List<TestCase> cases) {
         long start = System.nanoTime();
         double checksum = 0;
@@ -86,10 +86,10 @@ public class Benchmark {
         }
         long end = System.nanoTime();
         if (checksum == Double.NaN) System.err.print(""); // Prevent optimization
-        return (end - start) / 1000.0 / cases.size(); // microseconds per call
+        return (end - start) / 1_000_000.0; // milliseconds
     }
 
-    // Returns time per function call in microseconds
+    // Returns total time for running all test cases in milliseconds
     static double benchmarkInverse(Geodesic geod, List<TestCase> cases) {
         long start = System.nanoTime();
         double checksum = 0;
@@ -100,6 +100,6 @@ public class Benchmark {
         }
         long end = System.nanoTime();
         if (checksum == Double.NaN) System.err.print("");
-        return (end - start) / 1000.0 / cases.size(); // microseconds per call
+        return (end - start) / 1_000_000.0; // milliseconds
     }
 }

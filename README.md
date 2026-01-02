@@ -6,7 +6,7 @@ Benchmark comparison of geodesic calculation performance across different langua
 
 | Language | Library | Version |
 |----------|---------|---------|
-| C++ | [GeographicLib](https://geographiclib.sourceforge.io/) | 2.3 |
+| C++ | [GeographicLib](https://geographiclib.sourceforge.io/) | 2.5 |
 | Java | [GeographicLib-Java](https://github.com/geographiclib/geographiclib-java) | 2.1 |
 | Go | [geographiclib-go](https://github.com/pymaxion/geographiclib-go) | 2.1.1 |
 | Rust | [geographiclib-rs](https://github.com/georust/geographiclib-rs) | 0.2.5 |
@@ -26,7 +26,7 @@ Each benchmark runs 500,000 test cases from the official [GeodTest.dat](https://
 
 - C++: CMake, GeographicLib development headers, Boost
 - Java: JDK 11+, Maven
-- Go: Go 1.21+
+- Go: Go 1.25+
 - Rust: Rust 1.70+
 - Python 3 (for analysis script)
 
@@ -81,22 +81,22 @@ Runs per benchmark: 50
 ----------------------------------------
 Direct (geodesic forward problem)
 ----------------------------------------
-Language   Median (µs)    StdDev     Relative   Library
+Language   Median (ms)    StdDev     Relative   Library
 --------------------------------------------------------------------------------
-rust       0.180          ±0.002     1.00x      geographiclib-rs 0.2.5
-cpp        0.196          ±0.001     1.09x      GeographicLib 2.3
-go         0.293          ±0.002     1.63x      geographiclib-go 2.1.1
-java       0.238          ±0.003     1.32x      GeographicLib-Java 2.1
+rust       86.66          ±0.72      1.00x      geographiclib-rs 0.2.5
+cpp        98.46          ±0.62      1.14x      GeographicLib 2.5
+java       144.17         ±6.73      1.66x      GeographicLib-Java 2.1
+go         158.12         ±2.10      1.82x      geographiclib-go 2.1.1
 
 ----------------------------------------
 Inverse (geodesic inverse problem)
 ----------------------------------------
-Language   Median (µs)    StdDev     Relative   Library
+Language   Median (ms)    StdDev     Relative   Library
 --------------------------------------------------------------------------------
-rust       0.337          ±0.003     1.00x      geographiclib-rs 0.2.5
-cpp        0.381          ±0.002     1.13x      GeographicLib 2.3
-go         0.585          ±0.004     1.74x      geographiclib-go 2.1.1
-java       0.574          ±0.005     1.70x      GeographicLib-Java 2.1
+rust       175.40         ±1.83      1.00x      geographiclib-rs 0.2.5
+cpp        185.21         ±1.65      1.06x      GeographicLib 2.5
+go         304.85         ±1.89      1.74x      geographiclib-go 2.1.1
+java       326.59         ±6.10      1.86x      GeographicLib-Java 2.1
 ```
 
 ## CI/CD

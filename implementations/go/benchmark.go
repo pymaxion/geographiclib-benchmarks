@@ -30,10 +30,10 @@ type Result struct {
 	LibraryVersion string  `json:"library_version"`
 	TestCases      int     `json:"test_cases"`
 	Runs           int     `json:"runs"`
-	DirectMedian   float64 `json:"direct_us"`
-	DirectStdDev   float64 `json:"direct_stddev_us"`
-	InverseMedian  float64 `json:"inverse_us"`
-	InverseStdDev  float64 `json:"inverse_stddev_us"`
+	DirectMedian   float64 `json:"direct_ms"`
+	DirectStdDev   float64 `json:"direct_stddev_ms"`
+	InverseMedian  float64 `json:"inverse_ms"`
+	InverseStdDev  float64 `json:"inverse_stddev_ms"`
 }
 
 func loadTestCases(filepath string) ([]TestCase, error) {
@@ -66,7 +66,7 @@ func loadTestCases(filepath string) ([]TestCase, error) {
 	return cases, scanner.Err()
 }
 
-// Returns time per function call in microseconds
+// Returns total time for running all test cases in milliseconds
 func benchmarkDirect(cases []TestCase) float64 {
 	start := time.Now()
 	var checksum float64
@@ -76,10 +76,10 @@ func benchmarkDirect(cases []TestCase) float64 {
 	}
 	elapsed := time.Since(start)
 	_ = checksum // Prevent optimization
-	return float64(elapsed.Nanoseconds()) / float64(len(cases)) / 1000.0 // microseconds per call
+	return float64(elapsed.Nanoseconds()) / 1_000_000.0 // milliseconds
 }
 
-// Returns time per function call in microseconds
+// Returns total time for running all test cases in milliseconds
 func benchmarkInverse(cases []TestCase) float64 {
 	start := time.Now()
 	var checksum float64
@@ -89,7 +89,7 @@ func benchmarkInverse(cases []TestCase) float64 {
 	}
 	elapsed := time.Since(start)
 	_ = checksum
-	return float64(elapsed.Nanoseconds()) / float64(len(cases)) / 1000.0 // microseconds per call
+	return float64(elapsed.Nanoseconds()) / 1_000_000.0 // milliseconds
 }
 
 func median(data []float64) float64 {
@@ -135,10 +135,10 @@ func main() {
 		LibraryVersion: "2.1.1",
 		TestCases:      len(cases),
 		Runs:           RUNS,
-		DirectMedian:   math.Round(median(directTimes)*1000) / 1000,
-		DirectStdDev:   math.Round(stddev(directTimes)*1000) / 1000,
-		InverseMedian:  math.Round(median(inverseTimes)*1000) / 1000,
-		InverseStdDev:  math.Round(stddev(inverseTimes)*1000) / 1000,
+		DirectMedian:   math.Round(median(directTimes)*100) / 100,
+		DirectStdDev:   math.Round(stddev(directTimes)*100) / 100,
+		InverseMedian:  math.Round(median(inverseTimes)*100) / 100,
+		InverseStdDev:  math.Round(stddev(inverseTimes)*100) / 100,
 	}
 
 	enc := json.NewEncoder(os.Stdout)

@@ -37,10 +37,10 @@ struct Result {
     library_version: String,
     test_cases: usize,
     runs: usize,
-    direct_us: f64,
-    direct_stddev_us: f64,
-    inverse_us: f64,
-    inverse_stddev_us: f64,
+    direct_ms: f64,
+    direct_stddev_ms: f64,
+    inverse_ms: f64,
+    inverse_stddev_ms: f64,
 }
 
 fn load_test_cases(filepath: &str) -> Vec<TestCase> {
@@ -66,7 +66,7 @@ fn load_test_cases(filepath: &str) -> Vec<TestCase> {
     cases
 }
 
-// Returns time per function call in microseconds
+// Returns total time for running all test cases in milliseconds
 fn benchmark_direct(geod: &Geodesic, cases: &[TestCase]) -> f64 {
     let start = Instant::now();
     let mut checksum = 0.0_f64;
@@ -76,10 +76,10 @@ fn benchmark_direct(geod: &Geodesic, cases: &[TestCase]) -> f64 {
     }
     let elapsed = start.elapsed();
     let _ = checksum; // Prevent optimization
-    elapsed.as_secs_f64() * 1_000_000.0 / cases.len() as f64
+    elapsed.as_secs_f64() * 1_000.0
 }
 
-// Returns time per function call in microseconds
+// Returns total time for running all test cases in milliseconds
 fn benchmark_inverse(geod: &Geodesic, cases: &[TestCase]) -> f64 {
     let start = Instant::now();
     let mut checksum = 0.0_f64;
@@ -89,7 +89,7 @@ fn benchmark_inverse(geod: &Geodesic, cases: &[TestCase]) -> f64 {
     }
     let elapsed = start.elapsed();
     let _ = checksum;
-    elapsed.as_secs_f64() * 1_000_000.0 / cases.len() as f64
+    elapsed.as_secs_f64() * 1_000.0
 }
 
 fn main() {
@@ -124,10 +124,10 @@ fn main() {
         library_version: "0.2.5".to_string(),
         test_cases: cases.len(),
         runs: RUNS,
-        direct_us: (direct_data.median() * 1000.0).round() / 1000.0,
-        direct_stddev_us: (direct_data.std_dev().unwrap_or(0.0) * 1000.0).round() / 1000.0,
-        inverse_us: (inverse_data.median() * 1000.0).round() / 1000.0,
-        inverse_stddev_us: (inverse_data.std_dev().unwrap_or(0.0) * 1000.0).round() / 1000.0,
+        direct_ms: (direct_data.median() * 100.0).round() / 100.0,
+        direct_stddev_ms: (direct_data.std_dev().unwrap_or(0.0) * 100.0).round() / 100.0,
+        inverse_ms: (inverse_data.median() * 100.0).round() / 100.0,
+        inverse_stddev_ms: (inverse_data.std_dev().unwrap_or(0.0) * 100.0).round() / 100.0,
     };
 
     println!("{}", serde_json::to_string_pretty(&result).unwrap());
