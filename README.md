@@ -2,6 +2,12 @@
 
 [![Run Benchmarks](https://github.com/pymaxion/geographiclib-benchmarks/actions/workflows/benchmark.yml/badge.svg)](https://github.com/pymaxion/geographiclib-benchmarks/actions/workflows/benchmark.yml)
 
+**Direct problem (500k cases):**
+![Rust](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/rust.json)
+![C++](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/cpp.json)
+![Java](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/java.json)
+![Go](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/go.json)
+
 Benchmark comparison of geodesic calculation performance across different language implementations of [GeographicLib](https://geographiclib.sourceforge.io/).
 
 ## Languages & Libraries
