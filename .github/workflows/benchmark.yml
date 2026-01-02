@@ -5,6 +5,8 @@ on:
     branches: [main, mainline]
   pull_request:
     branches: [main, mainline]
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sunday at midnight UTC
   workflow_dispatch:
 
 jobs:
@@ -14,41 +16,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install C++ dependencies
+      - name: Build and run benchmarks
         run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake libgeographic-dev
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: maven
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.23'
-          cache-dependency-path: implementations/go/go.sum
-
-      - name: Set up Rust
-        uses: dtolnay/rust-action@stable
-
-      - name: Download test data
-        run: ./data/download-geodtest.sh
-
-      - name: Build all implementations
-        run: make build
-
-      - name: Run benchmarks
-        run: make run
-
-      - name: Analyze results
-        run: python3 scripts/analyze.py results
+          docker build -t geographiclib-benchmarks .
+          mkdir -p results
+          docker run --rm -v ${{ github.workspace }}/results:/benchmark/results geographiclib-benchmarks | tee results/summary.txt
 
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: benchmark-results
-          path: results/*.json
+          path: |
+            results/*.json
+            results/summary.txt

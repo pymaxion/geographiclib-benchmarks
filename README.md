@@ -1,5 +1,7 @@
 # GeographicLib Benchmarks
 
+[![Run Benchmarks](https://github.com/pymaxion/geographiclib-benchmarks/actions/workflows/benchmark.yml/badge.svg)](https://github.com/pymaxion/geographiclib-benchmarks/actions/workflows/benchmark.yml)
+
 Benchmark comparison of geodesic calculation performance across different language implementations of [GeographicLib](https://geographiclib.sourceforge.io/).
 
 ## Languages & Libraries
