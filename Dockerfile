@@ -35,7 +35,7 @@ RUN git clone --depth 1 --branch v${GEOGRAPHICLIB_VERSION} \
 # =============================================================================
 # GO TOOLCHAIN
 # =============================================================================
-ARG GO_VERSION=1.23.4
+ARG GO_VERSION=1.25.4
 RUN ARCH=$(dpkg --print-architecture) && \
     curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-${ARCH}.tar.gz" | tar -C /usr/local -xz
 ENV PATH="/usr/local/go/bin:/root/go/bin:${PATH}"
@@ -82,4 +82,4 @@ RUN ./data/download-geodtest.sh && make build
 # =============================================================================
 # RUN BENCHMARKS
 # =============================================================================
-CMD ["make", "run-only", "analyze-only"]
+CMD ["make", "run-only", "analyze"]

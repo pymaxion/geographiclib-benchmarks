@@ -33,14 +33,8 @@ Each benchmark runs 500,000 test cases from the official [GeodTest.dat](https://
 ### Local Execution
 
 ```bash
-# Download test data
-./data/download-geodtest.sh
-
-# Build and run all benchmarks
-make run
-
-# Analyze results
-make analyze
+# Build, run, and analyze all benchmarks
+make run analyze
 ```
 
 ### Docker

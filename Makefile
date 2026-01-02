@@ -1,4 +1,4 @@
-.PHONY: all build clean run run-only cpp java go rust data analyze analyze-only
+.PHONY: all build clean run run-only cpp java go rust data analyze
 
 DATA_FILE := data/GeodTest.dat
 RESULTS_DIR := results
@@ -58,10 +58,7 @@ run-rust: build-rust
 	@echo "Rust benchmark complete"
 
 # Run analysis script
-analyze: run
-	python3 scripts/analyze.py $(RESULTS_DIR)
-
-analyze-only:
+analyze:
 	python3 scripts/analyze.py $(RESULTS_DIR)
 
 # Run targets without build dependencies (for Docker where build is done separately)
