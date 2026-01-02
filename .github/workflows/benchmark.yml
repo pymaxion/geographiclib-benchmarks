@@ -36,33 +36,44 @@ jobs:
           GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
         run: |
           # Extract median times from results
-          RUST_MS=$(jq -r '.direct_ms' results/rust.json)
-          CPP_MS=$(jq -r '.direct_ms' results/cpp.json)
-          JAVA_MS=$(jq -r '.direct_ms' results/java.json)
-          GO_MS=$(jq -r '.direct_ms' results/go.json)
+          RUST_DIRECT=$(jq -r '.direct_ms' results/rust.json)
+          CPP_DIRECT=$(jq -r '.direct_ms' results/cpp.json)
+          JAVA_DIRECT=$(jq -r '.direct_ms' results/java.json)
+          GO_DIRECT=$(jq -r '.direct_ms' results/go.json)
+          RUST_INVERSE=$(jq -r '.inverse_ms' results/rust.json)
+          CPP_INVERSE=$(jq -r '.inverse_ms' results/cpp.json)
+          JAVA_INVERSE=$(jq -r '.inverse_ms' results/java.json)
+          GO_INVERSE=$(jq -r '.inverse_ms' results/go.json)
 
-          # Create shields.io endpoint JSON files
-          cat > /tmp/rust.json << EOF
-          {"schemaVersion":1,"label":"Rust","message":"${RUST_MS}ms","color":"#dea584"}
-          EOF
-          cat > /tmp/cpp.json << EOF
-          {"schemaVersion":1,"label":"C++","message":"${CPP_MS}ms","color":"#f34b7d"}
-          EOF
-          cat > /tmp/java.json << EOF
-          {"schemaVersion":1,"label":"Java","message":"${JAVA_MS}ms","color":"#b07219"}
-          EOF
-          cat > /tmp/go.json << EOF
-          {"schemaVersion":1,"label":"Go","message":"${GO_MS}ms","color":"#00ADD8"}
-          EOF
+          # Create shields.io endpoint JSON files for Direct
+          echo '{"schemaVersion":1,"label":"Rust","message":"'"${RUST_DIRECT}"'ms","color":"#dea584"}' > /tmp/rust-direct.json
+          echo '{"schemaVersion":1,"label":"C++","message":"'"${CPP_DIRECT}"'ms","color":"#f34b7d"}' > /tmp/cpp-direct.json
+          echo '{"schemaVersion":1,"label":"Java","message":"'"${JAVA_DIRECT}"'ms","color":"#b07219"}' > /tmp/java-direct.json
+          echo '{"schemaVersion":1,"label":"Go","message":"'"${GO_DIRECT}"'ms","color":"#00ADD8"}' > /tmp/go-direct.json
+
+          # Create shields.io endpoint JSON files for Inverse
+          echo '{"schemaVersion":1,"label":"Rust","message":"'"${RUST_INVERSE}"'ms","color":"#dea584"}' > /tmp/rust-inverse.json
+          echo '{"schemaVersion":1,"label":"C++","message":"'"${CPP_INVERSE}"'ms","color":"#f34b7d"}' > /tmp/cpp-inverse.json
+          echo '{"schemaVersion":1,"label":"Java","message":"'"${JAVA_INVERSE}"'ms","color":"#b07219"}' > /tmp/java-inverse.json
+          echo '{"schemaVersion":1,"label":"Go","message":"'"${GO_INVERSE}"'ms","color":"#00ADD8"}' > /tmp/go-inverse.json
 
           # Update gist with all badge files
           GIST_ID="84e9bf15fe8b3994c6608d5c5d5344e7"
           jq -n \
-            --arg rust "$(cat /tmp/rust.json)" \
-            --arg cpp "$(cat /tmp/cpp.json)" \
-            --arg java "$(cat /tmp/java.json)" \
-            --arg go "$(cat /tmp/go.json)" \
-            '{files: {"rust.json": {content: $rust}, "cpp.json": {content: $cpp}, "java.json": {content: $java}, "go.json": {content: $go}}}' | \
+            --arg rust_d "$(cat /tmp/rust-direct.json)" \
+            --arg cpp_d "$(cat /tmp/cpp-direct.json)" \
+            --arg java_d "$(cat /tmp/java-direct.json)" \
+            --arg go_d "$(cat /tmp/go-direct.json)" \
+            --arg rust_i "$(cat /tmp/rust-inverse.json)" \
+            --arg cpp_i "$(cat /tmp/cpp-inverse.json)" \
+            --arg java_i "$(cat /tmp/java-inverse.json)" \
+            --arg go_i "$(cat /tmp/go-inverse.json)" \
+            '{files: {
+              "rust-direct.json": {content: $rust_d}, "cpp-direct.json": {content: $cpp_d},
+              "java-direct.json": {content: $java_d}, "go-direct.json": {content: $go_d},
+              "rust-inverse.json": {content: $rust_i}, "cpp-inverse.json": {content: $cpp_i},
+              "java-inverse.json": {content: $java_i}, "go-inverse.json": {content: $go_i}
+            }}' | \
           curl -s -X PATCH \
             -H "Authorization: token ${GIST_TOKEN}" \
             -H "Accept: application/vnd.github+json" \

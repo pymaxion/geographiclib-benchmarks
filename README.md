@@ -3,10 +3,16 @@
 [![Run Benchmarks](https://github.com/pymaxion/geographiclib-benchmarks/actions/workflows/benchmark.yml/badge.svg)](https://github.com/pymaxion/geographiclib-benchmarks/actions/workflows/benchmark.yml)
 
 **Direct problem (500k cases):**
-![Rust](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/rust.json)
-![C++](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/cpp.json)
-![Java](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/java.json)
-![Go](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/go.json)
+![Rust](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/rust-direct.json)
+![C++](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/cpp-direct.json)
+![Java](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/java-direct.json)
+![Go](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/go-direct.json)
+
+**Inverse problem (500k cases):**
+![Rust](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/rust-inverse.json)
+![C++](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/cpp-inverse.json)
+![Java](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/java-inverse.json)
+![Go](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/pymaxion/84e9bf15fe8b3994c6608d5c5d5344e7/raw/go-inverse.json)
 
 Benchmark comparison of geodesic calculation performance across different language implementations of [GeographicLib](https://geographiclib.sourceforge.io/).
 
