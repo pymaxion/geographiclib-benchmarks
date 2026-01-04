@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.14)
 project(geographiclib_benchmark)
 
-# Use new Boost config-file package discovery instead of deprecated FindBoost
-cmake_policy(SET CMP0167 NEW)
+# Use new Boost config-file package discovery instead of deprecated FindBoost (CMake 3.30+)
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 NEW)
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE Release)
