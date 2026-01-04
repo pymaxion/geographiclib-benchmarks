@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # =============================================================================
 # C++ TOOLCHAIN + GEOGRAPHICLIB
 # =============================================================================
-ARG GEOGRAPHICLIB_VERSION=2.5
+ARG GEOGRAPHICLIB_VERSION=2.7
 RUN git clone --depth 1 --branch v${GEOGRAPHICLIB_VERSION} \
         https://github.com/geographiclib/geographiclib.git /tmp/geographiclib && \
     cd /tmp/geographiclib && \

@@ -3,7 +3,7 @@ module geographiclib-benchmark
 go 1.25
 
 require (
-	github.com/pymaxion/geographiclib-go/v2 v2.1.1
+	github.com/pymaxion/geographiclib-go/v2 v2.1.2
 	gonum.org/v1/gonum v0.16.0
 )
 

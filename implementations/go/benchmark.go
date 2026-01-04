@@ -132,7 +132,7 @@ func main() {
 		Language:       "go",
 		Version:        runtime.Version(),
 		Library:        "geographiclib-go",
-		LibraryVersion: "2.1.1",
+		LibraryVersion: "2.1.2",
 		TestCases:      len(cases),
 		Runs:           RUNS,
 		DirectMedian:   math.Round(median(directTimes)*100) / 100,
